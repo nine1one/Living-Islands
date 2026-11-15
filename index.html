@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Living Island — Civilisation Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- 3D WebGL Canvas Layer -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay Layer -->
+    <div id="ui-overlay">
+      <!-- TOP HEADER BAR -->
+      <header id="top-bar">
+        <!-- Logo & Title -->
+        <div class="brand">
+          <div class="brand-crest">
+            <img src="/assets/world-map.png" alt="Living Island Crest" class="crest-img" />
+          </div>
+          <div class="brand-text">
+            <h1>Living Island</h1>
+            <p>Civilisation Simulator</p>
+          </div>
+        </div>
+
+        <!-- Economy Stockpiles -->
+        <div class="economy-strip">
+          <div class="stat-pill" id="stat-gold">
+            <span class="pill-icon">🪙</span>
+            <div class="pill-values">
+              <span class="main-val">12,840</span>
+              <span class="rate-val pos">+240/h</span>
+            </div>
+          </div>
+          <div class="stat-pill" id="stat-wood">
+            <span class="pill-icon">🪵</span>
+            <div class="pill-values">
+              <span class="main-val">8,760</span>
+              <span class="rate-val pos">+180/h</span>
+            </div>
+          </div>
+          <div class="stat-pill" id="stat-stone">
+            <span class="pill-icon">🪨</span>
+            <div class="pill-values">
+              <span class="main-val">6,210</span>
+              <span class="rate-val pos">+120/h</span>
+            </div>
+          </div>
+          <div class="stat-pill" id="stat-food">
+            <span class="pill-icon">🌾</span>
+            <div class="pill-values">
+              <span class="main-val">10,230</span>
+              <span class="rate-val pos">+200/h</span>
+            </div>
+          </div>
+          <div class="stat-pill" id="stat-pop">
+            <span class="pill-icon">👤</span>
+            <div class="pill-values">
+              <span class="main-val">4,850</span>
+              <span class="rate-val pos">+75/h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time & Controls -->
+        <div class="time-strip">
+          <div class="calendar-pill">
+            <span class="cal-icon">📅</span>
+            <span class="cal-text">Year 1, Spring <br><small>Day 42 - 14:30</small></span>
+          </div>
+          <div class="speed-controls">
+            <button class="speed-btn active" id="btn-pause" title="Pause">❚❚</button>
+            <button class="speed-btn" id="btn-play" title="Play">▶</button>
+            <button class="speed-btn" id="btn-fast" title="Fast Forward">▶▶</button>
+            <button class="speed-btn" id="btn-fastest" title="Ultra Fast">▶▶▶</button>
+            <button class="speed-btn icon-btn" id="btn-settings" title="Settings">⚙</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- TOP-LEFT: WORLD STATUS -->
+      <section id="world-status" class="hud-panel">
+        <div class="panel-header">
+          <h2>World Status</h2>
+          <button class="panel-close-btn">✕</button>
+        </div>
+        <div class="status-rows">
+          <div class="status-row">
+            <span class="status-label">👤 Population</span>
+            <span class="status-value">4,850 <small class="pos">▲ +75/h</small></span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">😄 Happiness</span>
+            <span class="status-value">87% <small class="pos">▲ +2%</small></span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">🌾 Food Supply</span>
+            <span class="status-value">92%</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">💎 Resources</span>
+            <span class="status-value">76%</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">🛡️ Stability</span>
+            <span class="status-value">94%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOP-RIGHT: MINIMAP -->
+      <section id="minimap-panel" class="hud-panel">
+        <div class="panel-header">
+          <h2>Minimap</h2>
+          <button class="panel-close-btn">✕</button>
+        </div>
+        <div class="minimap-viewport">
+          <canvas id="minimap-canvas" width="220" height="150"></canvas>
+          <div class="minimap-tools">
+            <button id="mm-zoom-in" title="Zoom In">+</button>
+            <button id="mm-zoom-out" title="Zoom Out">−</button>
+            <button id="mm-fullscreen" title="Expand View">⛶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM-LEFT: MAP OVERLAYS -->
+      <section id="map-overlays" class="hud-panel">
+        <div class="panel-header">
+          <h2>Map Overlays</h2>
+          <button class="panel-close-btn">✕</button>
+        </div>
+        <div class="overlay-toggles">
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-borders" checked />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">🛡️</span> Territory Borders
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-roads" checked />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">⚔️</span> Roads
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-resources" checked />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">💰</span> Resources
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-settlements" checked />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">🏠</span> Settlements
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-citizens" checked />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">👥</span> Citizens
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-height" />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">⛰️</span> Terrain Height
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="toggle-climate" />
+            <span class="checkbox-custom"></span>
+            <span class="overlay-icon">☀️</span> Climate Zones
+          </label>
+        </div>
+      </section>
+
+      <!-- BOTTOM-CENTER: ACTION DOCK -->
+      <nav id="action-dock">
+        <button class="dock-item active" data-action="select">
+          <span class="dock-icon">↖</span>
+          <span class="dock-label">Select</span>
+        </button>
+        <button class="dock-item" data-action="build">
+          <span class="dock-icon">🔨</span>
+          <span class="dock-label">Build</span>
+        </button>
+        <button class="dock-item" data-action="manage">
+          <span class="dock-icon">👥</span>
+          <span class="dock-label">Manage</span>
+        </button>
+        <button class="dock-item" data-action="research">
+          <span class="dock-icon">🧪</span>
+          <span class="dock-label">Research</span>
+        </button>
+        <button class="dock-item" data-action="diplomacy">
+          <span class="dock-icon">🤝</span>
+          <span class="dock-label">Diplomacy</span>
+        </button>
+        <button class="dock-item" data-action="analytics">
+          <span class="dock-icon">📊</span>
+          <span class="dock-label">Analytics</span>
+        </button>
+      </nav>
+
+      <!-- BOTTOM-RIGHT: SETTLEMENT INSPECTOR -->
+      <section id="settlement-inspector" class="hud-panel">
+        <div class="inspector-content">
+          <div class="inspector-thumbnail">
+            <img src="/assets/world-map.png" alt="Settlement View" id="inspector-img" />
+          </div>
+          <div class="inspector-details">
+            <div class="faction-header">
+              <span class="faction-crest-badge blue-crest">🛡️</span>
+              <h3 id="inspector-name">Northstone</h3>
+            </div>
+            <div class="inspector-stats">
+              <div class="stat-line">
+                <span>Population</span>
+                <span id="inspect-pop">1,200</span>
+              </div>
+              <div class="stat-line">
+                <span>Happiness</span>
+                <span id="inspect-hap">90%</span>
+              </div>
+              <div class="stat-line">
+                <span>Production</span>
+                <span id="inspect-prod">320/h</span>
+              </div>
+              <div class="stat-line">
+                <span>Food</span>
+                <span id="inspect-food">280/h</span>
+              </div>
+            </div>
+            <div class="status-indicator">
+              <span class="indicator-dot green-dot"></span>
+              <span id="inspect-status">Growing</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
